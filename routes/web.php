@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\AboutController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\MovieController;
 
 Route::get('/', function () {
 
@@ -15,3 +16,9 @@ Route::get('/users', [UserController::class, 'index']);
 
 
 Route::get('/about', [AboutController::class, 'index']);
+
+Route::get('/movies', [MovieController::class, 'index']);
+
+Route::get('/movies/create', [MovieController::class, 'create']);
+
+Route::post('/movies', [MovieController::class, 'store']);
