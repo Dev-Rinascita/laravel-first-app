@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\CreateMovieRequest;
+use App\Models\Movie;
 
 class MovieController extends Controller
 {
@@ -13,42 +14,7 @@ class MovieController extends Controller
     public function index()
     {
 
-        // prendere i dati dei film dal database (in questo caso, li stiamo simulando con un array)
-        $movies = [
-            [
-                'title' => 'Inception',
-                'cover' => 'https://m.media-amazon.com/images/I/81OF+X3jx0L._UF1000,1000_QL80_.jpg',
-                'director' => 'Christopher Nolan',
-                'description' => 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.',
-                'year' => 2010
-            ],
-            [
-                'title' => 'The Matrix',
-                'cover' => 'https://m.media-amazon.com/images/I/81iXYexXtsL._AC_UF1000,1000_QL80_.jpg',
-                'director' => 'Lana Wachowski, Lilly Wachowski',
-                'description' => 'A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.',
-                'year' => 1999
-            ],
-            [
-                'title' => 'Interstellar',
-                'cover' => 'https://pad.mymovies.it/filmclub/2014/01/001/locandina.jpg',
-                'director' => 'Christopher Nolan',
-                'description' => 'A team of explorers travel through a wormhole in space in an attempt to ensure humanity\'s survival.',
-                'year' => 2014
-            ],
-            [
-                'title' => 'The Godfather',
-                'cover' => 'https://m.media-amazon.com/images/M/MV5BNGEwYjgwOGQtYjg5ZS00Njc1LTk2ZGEtM2QwZWQ2NjdhZTE5XkEyXkFqcGc@._V1_QL75_UY281_CR4,0,190,281_.jpg',
-                'director' => 'Francis Ford Coppola',
-                'description' => 'An organized crime dynasty\'s aging patriarch transfers control of his clandestine empire to his reluctant son.',
-                'year' => 1972
-            ]
-        ];
-
-        // e passarli alla vista
-        // return view('movies.index', [
-        //     'movies' => $movies // la chiave 'movies' sarà accessibile nella vista come $movies
-        // ]);
+        $movies = Movie::orderBy('created_at', 'desc')->paginate(10); // recupera tutti i film dal database usando il modello Movie
 
         return view('movies.index', compact('movies')); // un altro modo per passare i dati alla vista
         // in questo caso, la variabile $movies sarà accessibile nella vista con lo stesso nome
@@ -67,16 +33,35 @@ class MovieController extends Controller
      */
     public function store(CreateMovieRequest $request)
     {
-        // dd($request->all()); // per ora, mostriamo i dati inviati dal form
-
         $title = $request->input('title');
         $cover = $request->input('cover');
         $director = $request->input('director');
         $description = $request->input('description');
         $year = $request->input('year');
 
-        dd($title, $cover, $director, $description, $year); // mostra i dati del film inviati dal form
         // qui potresti salvare i dati nel database, ad esempio usando un modello Movie
+        Movie::create([
+            'title' => $title,
+            'cover' => $cover,
+            'director' => $director,
+            'description' => $description,
+            'year' => $year
+        ]);
+
+        return redirect()->route('movies.index')->with('success', 'Film creato con successo!');
+        // reindirizza alla lista dei film con un messaggio di successo
+        // -> redirect() è un metodo di Laravel che permette di reindirizzare l'utente a una rotta specifica
+        // -> route('movies.index') indica la rotta 'movies.index' che mostra la lista dei film
+        // -> with('success', 'Film creato con successo!') aggiunge un messaggio di sessione che può essere visualizzato nella vista
+        // -> il messaggio di successo sarà accessibile nella vista tramite la variabile di sessione 'success'
+        // // puoi visualizzarlo nella vista usando @if(session('success')) ... @endif
+        // // ad esempio, puoi mostrare il messaggio di successo in un alert nella vista
+        // // <div class="alert alert-success">{{ session('success') }}</div>
+        // // questo messaggio sarà visibile solo per un breve periodo dopo il reindirizz
+        // // e scomparirà alla prossima richiesta
+        // // questo è utile per mostrare feedback all'utente dopo un'azione come la creazione di un film
+
+
     }
 
     /**
@@ -84,7 +69,10 @@ class MovieController extends Controller
      */
     public function show(string $id)
     {
-        //
+
+        $movie = Movie::findOrFail($id); // recupera il film dal database usando l'ID
+
+        return view('movies.show', compact('movie')); // restituisce la vista per mostrare i dettagli del film
     }
 
     /**
@@ -92,15 +80,35 @@ class MovieController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $movie = Movie::findOrFail($id); // recupera il film dal database usando l'ID
+
+        return view('movies.edit', compact('movie')); // restituisce la vista per modificare un film esistente
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CreateMovieRequest $request, string $id)
     {
-        //
+        $movie = Movie::findOrFail($id); // recupera il film dal database usando l'ID
+
+        $title = $request->input('title');
+        $cover = $request->input('cover');
+        $director = $request->input('director');
+        $description = $request->input('description');
+        $year = $request->input('year');
+
+        // aggiorna i campi del film con i dati della richiesta
+        $movie->update([
+            'title' => $title,
+            'cover' => $cover,
+            'director' => $director,
+            'description' => $description,
+            'year' => $year
+        ]);
+
+        return redirect()->route('movies.index')->with('success', 'Film aggiornato con successo!');
+        // reindirizza alla lista dei film con un messaggio di successo
     }
 
     /**
@@ -108,6 +116,10 @@ class MovieController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $movie = Movie::findOrFail($id); // recupera il film dal database usando l'ID
+
+        $movie->delete(); // elimina il film dal database
+
+        return redirect()->route('movies.index')->with('success', 'Film eliminato con successo!');
     }
 }

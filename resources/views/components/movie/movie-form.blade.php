@@ -8,12 +8,15 @@
             </ul>
         </div>
     @endif --}}
-    <form action="/movies" method="post" class="space-y-4">
+    <form action="{{ isset($film) ? route('movies.update', $film) : route('movies.store') }}" method="post" class="space-y-4">
         @csrf
+        @if (isset($film))
+            @method('PUT')
+        @endif
         <div>
             <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
             <input type="text" name="title" id="title"
-            value="{{ old('title') }}"
+            value="{{ old('title') ?? $film->title ?? '' }}"
                 class="mt-1 block w-full border-gray-500 rounded-md border focus:border-blue-500 focus:ring-blue-500">
             @error('title')
                 <p class="text-red-500 font-light italic text-sm">{{ $message }}</p>
@@ -22,7 +25,7 @@
         <div>
             <label for="director" class="block text-sm font-medium text-gray-700">Director</label>
             <input type="text" name="director" id="director"
-            value="{{ old('director') }}"
+            value="{{ old('director') ?? $film->director ?? '' }}"
                 class="mt-1 block w-full border-gray-500 rounded-md border focus:border-blue-500 focus:ring-blue-500">
             @error('director')
                 <p class="text-red-500 font-light italic text-sm">{{ $message }}</p>
@@ -31,7 +34,7 @@
         <div>
             <label for="cover" class="block text-sm font-medium text-gray-700">Cover</label>
             <input type="text" name="cover" id="cover"
-            value="{{ old('cover') }}"
+            value="{{ old('cover') ?? $film->cover ?? '' }}"
                 class="mt-1 block w-full border-gray-500 rounded-md border focus:border-blue-500 focus:ring-blue-500">
             @error('cover')
                 <p class="text-red-500 font-light italic text-sm">{{ $message }}</p>
@@ -40,9 +43,8 @@
         <div>
             <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
             <textarea name="description" id="description" rows="3"
-                class="mt-1 block w-full border-gray-500 rounded-md border focus:border-blue-500 focus:ring-blue-500">
-                {{ old('description') }}
-            </textarea>
+            class="mt-1 block w-full border-gray-500 rounded-md border focus:border-blue-500 focus:ring-blue-500"
+                >{{ old('description') ?? $film->description ?? '' }}</textarea>
             @error('description')
                 <p class="text-red-500 font-light italic text-sm">{{ $message }}</p>
             @enderror
@@ -51,7 +53,7 @@
         <div>
             <label for="year" class="block text-sm font-medium text-gray-700">Year</label>
             <input type="number" name="year" id="year"
-            value="{{ old('year') }}"
+            value="{{ old('year') ?? $film->year ?? '' }}"
                 class="mt-1 block w-full border-gray-500 rounded-md border focus:border-blue-500 focus:ring-blue-500">
             @error('year')
                 <p class="text-red-500 font-light italic text-sm">{{ $message }}</p>
@@ -60,7 +62,7 @@
         <div>
             <button type="submit"
                 class="w-full px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                Create Movie
+                {{ isset($film) ? 'Modfica' : 'Crea' }}
             </button>
         </div>
     </form>

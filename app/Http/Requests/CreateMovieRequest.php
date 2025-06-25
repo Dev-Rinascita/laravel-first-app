@@ -23,7 +23,7 @@ class CreateMovieRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255|min:2',
-            'cover' => 'required|url',
+            'cover' => 'url',
             'director' => 'required|string|max:255',
             'description' => 'required|string|max:1000|min:10',
             'year' => 'required|integer|min:1888|max:' . date('Y'), // Il primo film è stato girato nel 1888
