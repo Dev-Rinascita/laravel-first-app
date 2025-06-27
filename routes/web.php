@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\DirectorController;
 
 Route::get('/', function () {
 
@@ -13,7 +14,6 @@ Route::get('/', function () {
 
 //usa UserController al metodo index per occuparti di questa rotta
 Route::get('/users', [UserController::class, 'index'])->name('users.index'); // aggiungi il nome della rotta per poterla usare in redirect
-
 
 Route::get('/about', [AboutController::class, 'index'])->name('about.index'); // aggiungi il nome della rotta per poterla usare in redirect
 
@@ -30,3 +30,5 @@ Route::get('/movies/{id}/edit', [MovieController::class, 'edit'])->name('movies.
 Route::put('/movies/{id}', [MovieController::class, 'update'])->name('movies.update'); // aggiungi il nome della rotta per poterla usare in redirect
 
 Route::delete('/movies/{id}', [MovieController::class, 'destroy'])->name('movies.destroy'); // aggiungi il nome della rotta per poterla usare in redirect
+
+Route::get('/directors', [DirectorController::class, 'index'])->name('directors.index'); // aggiungi il nome della rotta per poterla usare in redirect
