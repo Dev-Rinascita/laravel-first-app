@@ -3,20 +3,18 @@
 namespace App\View\Components\Director;
 
 use Closure;
-use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
+use Illuminate\View\Component;
 
-class DirectorCard extends Component
+class DirectorForm extends Component
 {
-
     public $regista;
-
     /**
      * Create a new component instance.
      */
     public function __construct($regista)
     {
-        $this->regista = $regista;
+        $this->regista = $regista; // assegna il film passato al costruttore alla proprietà $movie
     }
 
     /**
@@ -24,6 +22,6 @@ class DirectorCard extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.director.director-card');
+        return view('components.director.director-form');
     }
 }
