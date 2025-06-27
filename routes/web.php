@@ -12,23 +12,49 @@ Route::get('/', function () {
         // e restituisce il file welcome.blade.php, qui non è necessario specificare l'estensione .blade.php
 })->name('homepage'); // aggiungi il nome della rotta per poterla usare in redirect
 
+
+
 //usa UserController al metodo index per occuparti di questa rotta
 Route::get('/users', [UserController::class, 'index'])->name('users.index'); // aggiungi il nome della rotta per poterla usare in redirect
 
 Route::get('/about', [AboutController::class, 'index'])->name('about.index'); // aggiungi il nome della rotta per poterla usare in redirect
 
-Route::get('/movies', [MovieController::class, 'index'])->name('movies.index'); // aggiungi il nome della rotta per poterla usare in redirect
 
-Route::get('/movies/create', [MovieController::class, 'create']);
 
-Route::post('/movies', [MovieController::class, 'store'])->name('movies.store');
+// MOVIES
+Route::controller(MovieController::class)->group(function () { // qui raggruppiamo le rotte per controller
 
-Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movies.show'); // aggiungi il nome della rotta per poterla usare in redirect
+    Route::get('/movies', 'index')->name('movies.index'); // aggiungi il nome della rotta per poterla usare in redirect
 
-Route::get('/movies/{id}/edit', [MovieController::class, 'edit'])->name('movies.edit'); // aggiungi il nome della rotta per poterla usare in redirect
+    Route::get('/movies/create', 'create')->name('movies.create');
 
-Route::put('/movies/{id}', [MovieController::class, 'update'])->name('movies.update'); // aggiungi il nome della rotta per poterla usare in redirect
+    Route::post('/movies', 'store')->name('movies.store');
 
-Route::delete('/movies/{id}', [MovieController::class, 'destroy'])->name('movies.destroy'); // aggiungi il nome della rotta per poterla usare in redirect
+    Route::get('/movies/{id}', 'show')->name('movies.show'); // aggiungi il nome della rotta per poterla usare in redirect
 
-Route::get('/directors', [DirectorController::class, 'index'])->name('directors.index'); // aggiungi il nome della rotta per poterla usare in redirect
+    Route::get('/movies/{id}/edit', 'edit')->name('movies.edit'); // aggiungi il nome della rotta per poterla usare in redirect
+
+    Route::put('/movies/{id}', 'update')->name('movies.update'); // aggiungi il nome della rotta per poterla usare in redirect
+
+    Route::delete('/movies/{id}', 'destroy')->name('movies.destroy'); // aggiungi il nome della rotta per poterla usare in redirect
+
+});
+
+
+
+// DIRECTORS
+Route::group(['prefix' => 'directors'], function () { // qui puoi definire le rotte che iniziano con /directors (uso il prefix per raggruppare le rotte)
+
+    Route::get('/', [DirectorController::class, 'index'])->name('directors.index'); // aggiungi il nome della rotta per poterla usare in redirect
+
+    Route::get('/create', [DirectorController::class, 'create'])->name('directors.create');
+
+    Route::post('/', [DirectorController::class, 'store'])->name('directors.store');
+
+    Route::get('/{id}/edit', [DirectorController::class, 'edit'])->name('directors.edit');
+
+    Route::put('/{id}', [DirectorController::class, 'update'])->name('directors.update');
+
+    Route::delete('/{id}', [DirectorController::class, 'destroy'])->name('directors.destroy');
+
+});
