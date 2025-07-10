@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\CreateMovieRequest;
+use App\Http\Resources\MovieResource;
 use App\Models\Movie;
 
 class MovieController extends Controller
@@ -11,13 +12,43 @@ class MovieController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
 
-        $movies = Movie::orderBy('created_at', 'desc')->paginate(10); // recupera tutti i film dal database usando il modello Movie
+        $movies = Movie::orderBy('created_at', 'desc'); // recupera tutti i film dal database usando il modello Movie
 
-        return view('movies.index', compact('movies')); // un altro modo per passare i dati alla vista
-        // in questo caso, la variabile $movies sarà accessibile nella vista con lo stesso nome
+        // accetta solo $request->input('items') <= 5
+        // se il parametro 'items' non è presente, usa un valore predefinito di 5
+        $itemPerPage = $request->input('items') <= 5 ? $request->input('items') : 5; // imposta il numero di film per pagina
+
+        switch ($request->input('format')) {
+            case 'json':
+                $movies = $movies->paginate($itemPerPage); // recupera i film come una collezione
+                return response()->json(MovieResource::collection($movies)); // restituisce i film in formato JSON se il parametro 'format' è 'json'
+
+            case 'html':
+                $movies = $movies->paginate($itemPerPage);
+                return view('movies.index', compact('movies'));
+                break;
+
+            case 'csv':
+                $movies = $movies->get();
+                $csvContent = "Title,Cover,Director,Description,Year\n"; // inizia il contenuto CSV con le intestazioni
+                foreach ($movies as $movie) {
+                    $csvContent .= "{$movie->title},{$movie->cover},{$movie->director},{$movie->description},{$movie->year}\n"; // aggiungi i dati di ogni film
+                }
+                return response($csvContent)
+                    ->header('Content-Type', 'text/csv')
+                    ->header('Content-Disposition', 'attachment; filename="movies.csv"'); // restituisce il contenuto CSV come file scaricabile
+
+            default:
+                $movies = $movies->paginate($itemPerPage);
+                return view('movies.index', compact('movies')); // un altro modo per passare i dati alla vista
+                // in questo caso, la variabile $movies sarà accessibile nella vista con lo stesso nome
+                break;
+        }
+
+
     }
 
     /**
@@ -82,7 +113,7 @@ class MovieController extends Controller
     {
         $movie = Movie::findOrFail($id); // recupera il film dal database usando l'ID
 
-        return view('movies.edit', compact('movie')); // restituisce la vista per modificare un film esistente
+        return view('movies.show', compact('movie')); // restituisce la vista per modificare un film esistente
     }
 
     /**

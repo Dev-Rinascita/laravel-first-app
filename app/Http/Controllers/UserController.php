@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -11,35 +12,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = 'Mario Rossi';
-        // In questo caso stiamo passando una variabile alla vista,
-        // che sarà accessibile come $user
 
-        $usersData = [ // questo è un array di utenti che vogliamo mostrare nella vista ma potrebbero essere presi dal database
-            [
-                'nome' => 'Mario',
-                'cognome' => 'Rossi',
-                'email' => 'mario.rossi@example.com'
-            ],
-            [
-                'nome' => 'Luigi',
-                'cognome' => 'Bianchi',
-                'email' => 'luigi.bianchi@example.com'
-            ],
-            [
-                'nome' => 'Anna',
-                'cognome' => 'Verdi',
-                'email' => 'anna.verdi@example.com'
-            ],
-            [
-                'nome' => 'Giovanni',
-                'cognome' => 'Neri',
-                'email' => 'giovanni.neri@example.com'
-            ]
-        ];
+        $usersData = User::orderBy('created_at', 'desc')->paginate(10);
 
         return view('users.index', [ // qui sto passando alla vista i dati
-            'user' => $user,
             'users' => $usersData // la chiave 'users' sarà accessibile nella vista come $users
         ]);
     }

@@ -3,7 +3,7 @@
         <div class="flex w-full items-center justify-between space-x-6 p-6">
           <div class="flex-1 truncate">
             <div class="flex items-center space-x-3">
-              <h3 class="truncate text-sm font-medium text-gray-900">{{ $utente['nome'] }} {{ $utente['cognome'] }}</h3>
+              <h3 class="truncate text-sm font-medium text-gray-900">{{ $utente['id'] }} - {{ $utente['name'] }} </h3>
               <span class="inline-flex shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset">Admin</span>
             </div>
             <p class="mt-1 truncate text-sm text-gray-500">Regional Paradigm Technician</p>
