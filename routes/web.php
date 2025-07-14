@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\DirectorController;
 
@@ -56,5 +57,23 @@ Route::group(['prefix' => 'directors'], function () { // qui puoi definire le ro
     Route::put('/{id}', [DirectorController::class, 'update'])->name('directors.update');
 
     Route::delete('/{id}', [DirectorController::class, 'destroy'])->name('directors.destroy');
+
+});
+
+
+// CATEGORIES
+Route::controller(CategoryController::class)->group(function () {
+
+    Route::get('/categories', 'index')->name('categories.index');
+
+    Route::get('/categories/create', 'create')->name('categories.create');
+
+    Route::post('/categories', 'store')->name('categories.store');
+
+    Route::get('/categories/{id}/edit', 'edit')->name('categories.edit');
+
+    Route::put('/categories/{id}', 'update')->name('categories.update');
+
+    Route::delete('/categories/{id}', 'destroy')->name('categories.destroy');
 
 });
