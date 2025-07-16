@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Director;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DirectorResource;
 use App\Http\Requests\CreateDirectorRequest;
 
 class DirectorController extends Controller
@@ -14,25 +15,19 @@ class DirectorController extends Controller
      */
     public function index(Request $request)
     {
-
-        // dd($request->all()); // qui puoi vedere i dati inviati dalla richiesta
-        $search = $request->input('search'); // recupera il parametro di ricerca dalla richiesta
-        $age = $request->input('age'); // recupera il parametro di età dalla richiesta
+        $search = $request->input('search');
+        $age = $request->input('age');
 
         $directorData = Director::query()
-            ->when($search, function ($query, $search) { // il when è un metodo che permette di eseguire una query condizionale
-                // se il parametro di ricerca è presente, filtra i registi per nome
-                return $query->where('name', 'like', '%' . $search . '%'); // filtra i registi per nome
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', '%' . $search . '%');
             })
-            ->when($request->input('age'), function ($query, $age) { // filtra per età se il parametro è presente
-                return $query->where('age', '>', $age); // filtra i registi per età
+            ->when($request->input('age'), function ($query, $age) {
+                return $query->where('age', '>', $age);
             })
-            ->orderBy('name', 'asc') // ordina i registi per nome in ordine ascendente
-            ->get(); // recupera tutti i registi filtrati
+            ->orderBy('name', 'asc');
 
-        return view('directors.index', [ // qui sto passando alla vista i dati
-            'directors' => $directorData // la chiave 'users' sarà accessibile nella vista come $users
-        ]);
+        return $this->handleFormatResponse($request, $directorData, 5, 'directors.index');
     }
 
     /**
@@ -68,7 +63,9 @@ class DirectorController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $director = Director::with('movies.categories')->where('id', $id);
+
+        return $this->handleFormatResponse(request(), $director, 1, 'directors.show', $id);
     }
 
     /**
@@ -93,5 +90,46 @@ class DirectorController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * Gestisce la risposta in base al formato richiesto
+     */
+    private function handleFormatResponse(Request $request, $query, int $itemPerPage, string $viewName, $id = null)
+    {
+        switch ($request->input('format')) {
+            case 'json':
+                $data = $id ? $query->firstOrFail() : $query->paginate($itemPerPage);
+                return response()->json($id ? new DirectorResource($data) : DirectorResource::collection($data));
+
+            case 'html':
+                $data = $id ? $query->firstOrFail() : $query->paginate($itemPerPage);
+                $variableName = $id ? 'director' : 'directors';
+                return view($viewName, [$variableName => $data]);
+
+            case 'csv':
+                $data = $id ? collect([$query->firstOrFail()]) : $query->get();
+                return $this->generateCsvResponse($data);
+
+            default:
+                $data = $id ? $query->firstOrFail() : $query->paginate($itemPerPage);
+                $variableName = $id ? 'director' : 'directors';
+                return view($viewName, [$variableName => $data]);
+        }
+    }
+
+    /**
+     * Genera la risposta CSV
+     */
+    private function generateCsvResponse($directors)
+    {
+        $csvContent = "Name,Age\n";
+        foreach ($directors as $director) {
+            $csvContent .= "\"{$director->name}\",\"{$director->age}\"\n";
+        }
+
+        return response($csvContent)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="directors.csv"');
     }
 }

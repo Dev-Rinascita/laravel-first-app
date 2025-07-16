@@ -50,6 +50,8 @@ Route::group(['prefix' => 'directors'], function () { // qui puoi definire le ro
 
     Route::get('/create', [DirectorController::class, 'create'])->name('directors.create');
 
+    Route::get('/{id}', [DirectorController::class, 'show'])->name('directors.show');
+
     Route::post('/', [DirectorController::class, 'store'])->name('directors.store');
 
     Route::get('/{id}/edit', [DirectorController::class, 'edit'])->name('directors.edit');

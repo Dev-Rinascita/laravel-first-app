@@ -15,10 +15,22 @@
             <div class="text-lg text-gray-600">
                 <span class="font-semibold">Anno:</span> {{ $movie->year }}
             </div>
+            <div class="text-lg text-gray-600">
+                <span class="font-semibold">Regista:</span> {{ $movie->director->name }}
+            </div>
 
             <div class="prose max-w-none">
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Descrizione</h3>
                 <p class="text-gray-700 leading-relaxed">{{ $movie->description }}</p>
+            </div>
+
+            <div class="text-lg text-gray-600">
+                <span class="font-semibold">Categorie:</span>
+                <ul class="list-disc pl-5">
+                    @foreach ($movie->categories as $category)
+                        <li>{{ $category->name }}</li>
+                    @endforeach
+                </ul>
             </div>
         </div>
     </div>

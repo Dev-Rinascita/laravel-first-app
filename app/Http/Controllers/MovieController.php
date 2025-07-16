@@ -14,41 +14,11 @@ class MovieController extends Controller
      */
     public function index(Request $request)
     {
+        $movies = Movie::with(['director', 'categories'])->orderBy('created_at', 'desc');
+        $itemPerPage = $request->input('items', 5); // usa 5 come valore predefinito se 'items' è null
+        $itemPerPage = $itemPerPage <= 5 ? $itemPerPage : 5; // limita a massimo 5
 
-        $movies = Movie::orderBy('created_at', 'desc'); // recupera tutti i film dal database usando il modello Movie
-
-        // accetta solo $request->input('items') <= 5
-        // se il parametro 'items' non è presente, usa un valore predefinito di 5
-        $itemPerPage = $request->input('items') <= 5 ? $request->input('items') : 5; // imposta il numero di film per pagina
-
-        switch ($request->input('format')) {
-            case 'json':
-                $movies = $movies->paginate($itemPerPage); // recupera i film come una collezione
-                return response()->json(MovieResource::collection($movies)); // restituisce i film in formato JSON se il parametro 'format' è 'json'
-
-            case 'html':
-                $movies = $movies->paginate($itemPerPage);
-                return view('movies.index', compact('movies'));
-                break;
-
-            case 'csv':
-                $movies = $movies->get();
-                $csvContent = "Title,Cover,Director,Description,Year\n"; // inizia il contenuto CSV con le intestazioni
-                foreach ($movies as $movie) {
-                    $csvContent .= "{$movie->title},{$movie->cover},{$movie->director},{$movie->description},{$movie->year}\n"; // aggiungi i dati di ogni film
-                }
-                return response($csvContent)
-                    ->header('Content-Type', 'text/csv')
-                    ->header('Content-Disposition', 'attachment; filename="movies.csv"'); // restituisce il contenuto CSV come file scaricabile
-
-            default:
-                $movies = $movies->paginate($itemPerPage);
-                return view('movies.index', compact('movies')); // un altro modo per passare i dati alla vista
-                // in questo caso, la variabile $movies sarà accessibile nella vista con lo stesso nome
-                break;
-        }
-
-
+        return $this->handleFormatResponse($request, $movies, $itemPerPage, 'movies.index');
     }
 
     /**
@@ -100,10 +70,9 @@ class MovieController extends Controller
      */
     public function show(string $id)
     {
+        $movie = Movie::with(['director', 'categories'])->where('id', $id);
 
-        $movie = Movie::findOrFail($id); // recupera il film dal database usando l'ID
-
-        return view('movies.show', compact('movie')); // restituisce la vista per mostrare i dettagli del film
+        return $this->handleFormatResponse(request(), $movie, 1, 'movies.show', $id);
     }
 
     /**
@@ -152,5 +121,47 @@ class MovieController extends Controller
         $movie->delete(); // elimina il film dal database
 
         return redirect()->route('movies.index')->with('success', 'Film eliminato con successo!');
+    }
+
+    /**
+     * Gestisce la risposta in base al formato richiesto
+     */
+    private function handleFormatResponse(Request $request, $query, int $itemPerPage, string $viewName, $id = null)
+    {
+        switch ($request->input('format')) {
+            case 'json':
+                $data = $id ? $query->firstOrFail() : $query->paginate($itemPerPage);
+                return response()->json($id ? new MovieResource($data) : MovieResource::collection($data));
+
+            case 'html':
+                $data = $id ? $query->firstOrFail() : $query->paginate($itemPerPage);
+                $variableName = $id ? 'movie' : 'movies';
+                return view($viewName, [$variableName => $data]);
+
+            case 'csv':
+                $data = $id ? collect([$query->firstOrFail()]) : $query->get();
+                return $this->generateCsvResponse($data);
+
+            default:
+                $data = $id ? $query->firstOrFail() : $query->paginate($itemPerPage);
+                $variableName = $id ? 'movie' : 'movies';
+                return view($viewName, [$variableName => $data]);
+        }
+    }
+
+    /**
+     * Genera la risposta CSV
+     */
+    private function generateCsvResponse($movies)
+    {
+        $csvContent = "Title,Cover,Director,Description,Year\n";
+        foreach ($movies as $movie) {
+            $director = $movie->director ? $movie->director->name : 'N/A';
+            $csvContent .= "\"{$movie->title}\",\"{$movie->cover}\",\"{$director}\",\"{$movie->description}\",\"{$movie->year}\"\n";
+        }
+
+        return response($csvContent)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="movies.csv"');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AboutController extends Controller
@@ -11,11 +12,7 @@ class AboutController extends Controller
         // Qui puoi aggiungere la logica per recuperare i dati necessari per la pagina "About"
         // Ad esempio, potresti voler passare alcune informazioni alla vista
 
-        $user = [
-            'nome' => 'Pino',
-            'cognome' => 'Silvestre',
-            'email' => 'pino.silvestre@example.com'
-        ];
+        $user = User::find(13); // Recupera l'utente con ID 1, puoi modificare questo in base alle tue necessità
 
         return view('about.index', [
             'user' => $user // Passa l'array $user alla vista

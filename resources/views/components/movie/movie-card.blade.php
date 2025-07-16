@@ -8,7 +8,7 @@
                 Anno: <span class="font-normal">{{ $movie->year }}</span>
             </p>
             <p class="text-lg font-semibold mb-2">
-                Regista: <span class="font-normal">{{ $movie->director }}</span>
+                Regista: <span class="font-normal">{{ $movie->director->name }}</span>
             </p>
         </div>
     </div>

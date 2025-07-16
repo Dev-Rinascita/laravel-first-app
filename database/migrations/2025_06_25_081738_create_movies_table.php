@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('title', length: 500);
             $table->string('cover', length: 1000)->nullable(); // cover può essere null se non viene fornita
-            $table->string('director');
             $table->text('description'); // testo lungo per la descrizione
             $table->integer('year')->unsigned(); // anno del film, deve essere un inter
             $table->timestamps();
