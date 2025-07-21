@@ -24,9 +24,15 @@
         </div>
         <div>
             <label for="director" class="block text-sm font-medium text-gray-700">Director</label>
-            <input type="text" name="director" id="director"
-            value="{{ old('director') ?? $film->director ?? '' }}"
+            <select name="directors[]" id="directors" multiple
                 class="mt-1 block w-full border-gray-500 rounded-md border focus:border-blue-500 focus:ring-blue-500">
+                @foreach ($registi as $director)
+                    <option value="{{ $director->id }}"
+                        {{ (old('directors') && in_array($director->id, old('directors'))) || (isset($film) && $film->directors->contains($director->id)) ? 'selected' : '' }}>
+                        {{ $director->name }}
+                    </option>
+                @endforeach
+            </select>
             @error('director')
                 <p class="text-red-500 font-light italic text-sm">{{ $message }}</p>
             @enderror
@@ -49,7 +55,22 @@
                 <p class="text-red-500 font-light italic text-sm">{{ $message }}</p>
             @enderror
         </div>
-
+        <div>
+            {{-- categories --}}
+            <label for="categories" class="block text-sm font-medium text-gray-700">Categories</label>
+            <select name="categories[]" id="categories" multiple
+                class="mt-1 block w-full border-gray-500 rounded-md border focus:border-blue-500 focus:ring-blue-500">
+                @foreach ($categorie as $category)
+                    <option value="{{ $category->id }}"
+                        {{ (old('categories') && in_array($category->id, old('categories'))) || (isset($film) && $film->categories->contains($category->id)) ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+            @error('categories')
+                <p class="text-red-500 font-light italic text-sm">{{ $message }}</p>
+            @enderror
+        </div>
         <div>
             <label for="year" class="block text-sm font-medium text-gray-700">Year</label>
             <input type="number" name="year" id="year"

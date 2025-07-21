@@ -15,6 +15,6 @@ class Director extends Model
     // in diverse righe della tabella dei film
     public function movies()
     {
-        return $this->hasMany(Movie::class); // qui sto dicendo che un regista può avere molti film
+        return $this->belongsToMany(Movie::class); // qui sto dicendo che un regista può avere molti film
     }
 }

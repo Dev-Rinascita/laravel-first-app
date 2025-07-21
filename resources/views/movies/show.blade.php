@@ -16,7 +16,10 @@
                 <span class="font-semibold">Anno:</span> {{ $movie->year }}
             </div>
             <div class="text-lg text-gray-600">
-                <span class="font-semibold">Regista:</span> {{ $movie->director->name }}
+                <span class="font-semibold">Regista:</span>
+                @foreach ($movie->directors as $director)
+                    <span class="text-gray-500">{{ $director->name }}</span>,
+                @endforeach
             </div>
 
             <div class="prose max-w-none">

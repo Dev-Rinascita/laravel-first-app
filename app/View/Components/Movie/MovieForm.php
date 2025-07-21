@@ -9,12 +9,16 @@ use Illuminate\View\Component;
 class MovieForm extends Component
 {
     public $film;
+    public $categorie;
+    public $registi;
     /**
      * Create a new component instance.
      */
-    public function __construct($film)
+    public function __construct($film, $categorie, $registi)
     {
-        $this->film = $film; // assegna il film passato al costruttore alla proprietà $movie
+        $this->film = $film;
+        $this->categorie = $categorie;
+        $this->registi = $registi;
     }
 
     /**

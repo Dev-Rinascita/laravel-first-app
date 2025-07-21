@@ -21,7 +21,7 @@ class MovieResource extends JsonResource
             'cover' => $this->cover,
             'description' => $this->description,
             'year' => $this->year,
-            'director' => new DirectorResource($this->whenLoaded('director')), // usa il resource DirectorResource per il regista
+            'directors' => DirectorResource::collection($this->whenLoaded('directors')), // usa il resource DirectorResource per i registi
             'categories' => CategoryResource::collection($this->whenLoaded('categories')), // usa il resource CategoryResource per le categorie
         ];
     }

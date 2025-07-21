@@ -5,7 +5,7 @@
     </div>
 
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 px-4">
-        <x-movie.movie-form :film="$movie" />
+        <x-movie.movie-form :film="$movie" :categorie="$categories" :registi="$directors" />
     </div>
 
 </x-layout.app-layout>

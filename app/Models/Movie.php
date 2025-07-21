@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Movie extends Model
 {
     protected $fillable = [ // quali sono i campi che possono essere riempiti in modo massivo
-        'director_id', // foreign key per il regista
         'title',
         'cover',
         'description',
@@ -15,9 +14,9 @@ class Movie extends Model
     ];
 
     // un film può appartenere a un solo director
-    public function director()
+    public function directors()
     {
-        return $this->belongsTo(Director::class); // qui sto dicendo che un film appartiene a un regista
+        return $this->belongsToMany(Director::class); // qui sto dicendo che un film può appartenere a più registi
     }
 
     // un film può appartenere a più categorie
