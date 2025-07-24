@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             DirectorSeeder::class,
             MovieSeeder::class,
             UserSeeder::class,
+            BookSeeder::class, // Ensure to call the BookSeeder to seed the books table
         ]);
     }
 }

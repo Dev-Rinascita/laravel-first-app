@@ -6,6 +6,7 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\DirectorController;
+use App\Http\Controllers\BookController; // Import the BookController
 
 Route::get('/', function () {
 
@@ -79,3 +80,7 @@ Route::controller(CategoryController::class)->group(function () {
     Route::delete('/categories/{id}', 'destroy')->name('categories.destroy');
 
 });
+
+// BOOKS
+Route::resource('books', BookController::class); // This will automatically create all the necessary routes for the BookController
+Route::get('/books', [BookController::class, 'index'])->name('books.index'); // aggiungi il nome della rotta per poterla usare in redirect
